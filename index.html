@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Breast Cancer Risk Prediction</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 40px 20px;
+        color: #2c3e50;
+    }
+    .container {
+        max-width: 640px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 32px 40px 40px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    h1 {
+        font-size: 22px;
+        margin-bottom: 4px;
+        color: #1f2d3d;
+    }
+    p.subtitle {
+        color: #7a8794;
+        margin-top: 0;
+        margin-bottom: 28px;
+        font-size: 14px;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 20px;
+    }
+    .field {
+        display: flex;
+        flex-direction: column;
+    }
+    .field.full {
+        grid-column: 1 / -1;
+    }
+    label {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #445;
+    }
+    input, select {
+        padding: 9px 10px;
+        border: 1px solid #d7dce1;
+        border-radius: 6px;
+        font-size: 14px;
+        background: #fbfcfd;
+    }
+    input:focus, select:focus {
+        outline: none;
+        border-color: #6c8ef5;
+    }
+    button {
+        margin-top: 26px;
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 6px;
+        background: #3b5bdb;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #2f49ad;
+    }
+    .result {
+        margin-top: 28px;
+        padding: 18px 20px;
+        border-radius: 8px;
+        font-size: 15px;
+    }
+    .result.positive {
+        background: #fdecea;
+        border: 1px solid #f5b5ad;
+        color: #a13327;
+    }
+    .result.negative {
+        background: #e9f7ef;
+        border: 1px solid #a9dfbf;
+        color: #1e7a45;
+    }
+    .result strong {
+        display: block;
+        font-size: 17px;
+        margin-bottom: 4px;
+    }
+    .disclaimer {
+        margin-top: 18px;
+        font-size: 12px;
+        color: #9aa5b1;
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Breast Cancer Risk Prediction</h1>
+    <p class="subtitle">Logistic Regression model &middot; for local demo purposes only</p>
+
+    <form action="/predict" method="post">
+        <div class="grid">
+            <div class="field">
+                <label>Age</label>
+                <input type="number" name="age" required min="1" max="120">
+            </div>
+            <div class="field">
+                <label>BMI</label>
+                <input type="number" step="0.1" name="bmi" required>
+            </div>
+            <div class="field">
+                <label>Blood Pressure</label>
+                <input type="number" name="blood_pressure" required>
+            </div>
+            <div class="field">
+                <label>Cholesterol</label>
+                <input type="number" name="cholesterol" required>
+            </div>
+            <div class="field">
+                <label>Exercise Days / Week</label>
+                <input type="number" name="exercise_days" min="0" max="7" required>
+            </div>
+            <div class="field">
+                <label>Physical Activity Level</label>
+                <select name="physical_activity">
+                    <option value="High">High</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Family History of Cancer</label>
+                <select name="family_history">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Smoking</label>
+                <select name="smoking">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Alcohol Consumption</label>
+                <select name="alcohol">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Hormone Therapy</label>
+                <select name="hormone_therapy">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Menopause Status</label>
+                <select name="menopause">
+                    <option value="Pre">Pre-menopause</option>
+                    <option value="Post">Post-menopause</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Genetic Mutation</label>
+                <select name="genetic_mutation">
+                    <option value="Negative">Negative</option>
+                    <option value="Positive">Positive</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Diabetes</label>
+                <select name="diabetes">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="field full">
+                <label>Breastfeeding History</label>
+                <select name="breastfeeding">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                    <option value="Not Applicable">Not Applicable</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit">Predict Risk</button>
+    </form>
+
+    {% if result %}
+    <div class="result {{ 'positive' if result.is_positive else 'negative' }}">
+        <strong>{{ result.prediction }}</strong>
+        Model confidence: {{ result.probability }}% probability of cancer risk
+    </div>
+    {% endif %}
+
+    <div class="disclaimer">
+        This tool is a machine learning demo trained on a sample dataset. It is not a medical diagnostic tool and should never replace professional medical advice, mammograms, or biopsies.
+    </div>
+</div>
+</body>
+</html>
